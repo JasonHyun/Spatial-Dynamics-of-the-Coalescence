@@ -5,8 +5,9 @@
 
 set -e  # Exit on any error
 
-# Configuration
-PROJECT_ROOT="/Users/jeongwoohyun/thesis"
+# Configuration - automatically detect project root from script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CODE_DIR="$PROJECT_ROOT/code"
 RESULTS_DIR="$PROJECT_ROOT/results"
 DATA_DIR="$PROJECT_ROOT/data/snv maf"

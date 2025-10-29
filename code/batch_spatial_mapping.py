@@ -8,6 +8,7 @@ partitions lineages, and calculates spatial metrics.
 import os
 import sys
 import json
+import hashlib
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -148,23 +149,41 @@ def binary_lineage_partitioning(tree_structure, internal_nodes, leaf_nodes):
         all_nodes = internal_nodes + leaf_nodes
         return {node: 1 for node in all_nodes}, root_children
     
-    # Get descendants for each child of root
+    # In a binary coalescent tree, the root should have exactly 2 children
+    # Both children are the founders of the two main lineages
+    if len(root_children) != 2:
+        # Unexpected case: more than 2 children (shouldn't happen in binary tree)
+        # Take first two as founders
+        founders = root_children[:2]
+    else:
+        founders = root_children
+    
+    # Get descendants for each founder
     def get_descendants(node_name):
-        """Get all descendant nodes (recursive)."""
+        """Get all descendant nodes (recursive), including the node itself."""
         descendants = set([node_name])
         for child in tree_structure.get(node_name, {}).get('children', []):
             descendants.update(get_descendants(child))
         return descendants
     
-    # Find the two largest subtrees
-    child_descendants = []
-    for child in root_children:
-        desc = get_descendants(child)
-        child_descendants.append((child, len(desc)))
+    # Get descendants for each founder BEFORE assignment to verify partitioning
+    founder1_desc = get_descendants(founders[0])
+    founder2_desc = get_descendants(founders[1])
     
-    # Sort by size and take top 2
-    child_descendants.sort(key=lambda x: x[1], reverse=True)
-    founders = [child_descendants[0][0], child_descendants[1][0]]
+    # Verify no overlap (shouldn't happen in a binary tree, but check anyway)
+    overlap = founder1_desc & founder2_desc
+    if overlap and overlap != {root_node}:
+        # Overlap is allowed to include root_node only
+        non_root_overlap = overlap - {root_node}
+        if non_root_overlap:
+            print(f"  Warning: {len(non_root_overlap)} nodes found in both lineages: {list(non_root_overlap)[:5]}")
+    
+    # Verify all nodes are covered (except root)
+    all_nodes = set(internal_nodes + leaf_nodes) - {root_node}
+    covered = (founder1_desc | founder2_desc) - {root_node}
+    missing = all_nodes - covered
+    if missing:
+        print(f"  Warning: {len(missing)} nodes not in either lineage's descendants: {list(missing)[:5]}")
     
     # Assign lineage colors
     node_colors = {}
@@ -172,20 +191,49 @@ def binary_lineage_partitioning(tree_structure, internal_nodes, leaf_nodes):
     # Root gets color 0
     node_colors[root_node] = 0
     
-    # Assign lineage 1 (first founder and all descendants)
-    founder1_desc = get_descendants(founders[0])
+    # Assign lineage 1 (first founder and all its descendants)
     for node in founder1_desc:
-        node_colors[node] = 1
+        if node != root_node:  # Don't overwrite root color
+            node_colors[node] = 1
     
-    # Assign lineage 2 (second founder and all descendants)
-    founder2_desc = get_descendants(founders[1])
+    # Assign lineage 2 (second founder and all its descendants)
+    # This assignment happens after lineage 1, so if there's any overlap, lineage 2 will overwrite
     for node in founder2_desc:
-        node_colors[node] = 2
+        if node != root_node:  # Don't overwrite root color
+            node_colors[node] = 2
     
-    # Assign any remaining nodes to lineage 1
-    all_nodes = set(internal_nodes + leaf_nodes)
-    for node in all_nodes:
-        if node not in node_colors:
+    # Final verification: count lineage sizes
+    lineage1_count = sum(1 for v in node_colors.values() if v == 1)
+    lineage2_count = sum(1 for v in node_colors.values() if v == 2)
+    
+    # Verify the partitioning is correct
+    total_assigned = lineage1_count + lineage2_count
+    total_nodes = len(internal_nodes) + len(leaf_nodes) - 1  # Excluding root
+    
+    # In a proper binary tree, all nodes (except root) should be assigned
+    if total_assigned != total_nodes:
+        print(f"  Warning: Only {total_assigned}/{total_nodes} nodes assigned to lineages")
+    
+    # Log lineage sizes for debugging (only if extreme imbalance)
+    if total_assigned > 0:
+        lineage1_ratio = lineage1_count / total_assigned
+        lineage2_ratio = lineage2_count / total_assigned
+        
+        # Note: In random coalescent trees, one subtree can legitimately have 
+        # many more nodes than the other. This is expected behavior.
+        if abs(lineage1_ratio - lineage2_ratio) > 0.7:  # >85% imbalance
+            # This is a significant imbalance, but it's expected in stochastic coalescent processes
+            # The tree structure is correct - it's just that one lineage happened to 
+            # accumulate more mutations/lineages through random coalescence
+            pass
+    
+    # Handle any remaining unassigned nodes (shouldn't happen)
+    all_nodes_check = set(internal_nodes + leaf_nodes) - {root_node}
+    unassigned = all_nodes_check - set(node_colors.keys())
+    if unassigned:
+        print(f"  Warning: {len(unassigned)} nodes not assigned to any lineage")
+        # Assign to lineage 1 as fallback
+        for node in unassigned:
             node_colors[node] = 1
     
     return node_colors, founders
@@ -221,7 +269,7 @@ def calculate_morans_i_coalescent(positions, node_colors, exclude_value=None, kn
     if len(pos_array) <= 1:
         return 0.0, 1.0
     
-    # Create weights matrix based on k-nearest neighbors
+    # Create weights matrix based on k-nearest neighbors (original method for all cases)
     distances = squareform(pdist(pos_array))
     weights = np.zeros_like(distances)
     
@@ -231,7 +279,7 @@ def calculate_morans_i_coalescent(positions, node_colors, exclude_value=None, kn
         nearest = np.argsort(distances[i])[1:effective_knn+1]
         weights[i, nearest] = 1
     
-    # Standardize weights matrix
+    # Standardize weights matrix by row
     row_sums = weights.sum(axis=1)
     non_zero_rows = row_sums > 0
     if np.any(non_zero_rows):
@@ -245,12 +293,17 @@ def calculate_morans_i_coalescent(positions, node_colors, exclude_value=None, kn
     z = color_array - np.mean(color_array)
     z_2 = np.sum(z**2)
     
+    if z_2 == 0:
+        return 0.0, 1.0
+    
+    # Calculate the numerator (spatial autocovariance) using nested loops
     numerator = 0
     for i in range(n):
         for j in range(n):
             if i != j:
                 numerator += weights[i, j] * z[i] * z[j]
     
+    # Calculate Moran's I
     total_weights = np.sum(weights)
     if total_weights > 0 and z_2 > 0:
         I = (n / total_weights) * (numerator / z_2)
@@ -479,9 +532,12 @@ def process_single_tree_for_spatial_mapping(maf_file, output_dir, random_seed=No
         # Extract patient UUID from file path
         patient_uuid = Path(maf_file).parent.name
         
-        # Use patient UUID hash as seed if not provided
+        # Use deterministic seed based on patient UUID for reproducibility
+        # hash() can vary across Python sessions, so we use MD5 instead
         if random_seed is None:
-            random_seed = hash(patient_uuid) % (2**31)
+            # Create deterministic integer from UUID string
+            hash_obj = hashlib.md5(patient_uuid.encode('utf-8'))
+            random_seed = int(hash_obj.hexdigest(), 16) % (2**31)
         
         # Step 1: Load MAF data
         mutations, error = load_maf_data(maf_file)

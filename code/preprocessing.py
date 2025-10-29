@@ -271,8 +271,11 @@ These {bulk_count} bulk patients are ready for downstream analysis:
 def main():
     """Main function."""
     # Configuration
-    data_directory = "/Users/jeongwoohyun/thesis/data/snv maf"
-    output_file = "/Users/jeongwoohyun/thesis/results/preprocessing_results.md"
+    # Use relative paths from script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    data_directory = os.path.join(project_root, "data", "snv maf")
+    output_file = os.path.join(project_root, "results", "preprocessing_results.md")
     
     print("🚀 Starting MAF preprocessing...")
     print("=" * 60)
