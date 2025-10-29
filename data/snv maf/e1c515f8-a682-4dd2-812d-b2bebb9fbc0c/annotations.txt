@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+8659654e-3dc6-488e-ab18-c5a9b6617ca5	\N	masked_somatic_mutation	e1c515f8-a682-4dd2-812d-b2bebb9fbc0c	General	Notification	2022-02-28T14:42:25.143729-06:00	Approved	Variants from SomaticSniper are not included.
+ce031c07-8ae5-5853-b894-da1276beec1c	11679	case	d7ba64d7-b4e5-488d-9f28-bcb7bf3c0f35	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy malignant melanoma of the trunk.  No systemic chemotherapy or radiation.

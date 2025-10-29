@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+f5889ef6-fc37-4909-8e49-fefac5687ee9	\N	masked_somatic_mutation	4662da18-e9f0-493d-bbce-2fe831fcb765	General	Notification	2022-02-28T14:44:03.997210-06:00	Approved	Variants from SomaticSniper are not included.
+e00a0bfb-96d7-5abd-82cd-23ce8e7cbf96	2392	case	c777a777-373a-4773-9566-6c373261f00a	Item in special subset	Notification	2011-04-06T00:00:00	Approved	Case came in as Colon.  BCR was notified that case was Rectal.  Program Office determined this will be a Notification vs. a Redaction

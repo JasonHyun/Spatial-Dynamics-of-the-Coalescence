@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+6fe43a66-cb69-58d8-9794-280fcb4dc49d	12004	case	af17788e-a562-43aa-bd36-fd3e031f483c	History of acceptable prior treatment related to a prior/other malignancy	Notification	2012-11-10T00:00:00	Approved	Prior malignancy  larnyx treated w/ radiation.
+ab08a3ff-6073-456d-b181-c0e780729e1e	\N	masked_somatic_mutation	6648ca0d-a3bf-4043-adf9-8eaae5a7dbfa	General	Notification	2022-02-28T14:48:58.734021-06:00	Approved	Variants from SomaticSniper are not included.

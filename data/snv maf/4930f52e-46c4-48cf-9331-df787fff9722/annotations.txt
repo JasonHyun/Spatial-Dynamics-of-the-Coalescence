@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+69dca85d-4fe8-48b3-a19d-69bc4690a89f	\N	masked_somatic_mutation	4930f52e-46c4-48cf-9331-df787fff9722	General	Notification	2022-02-28T13:10:13.585150-06:00	Approved	Variants from SomaticSniper are not included.
+af676391-7491-51e1-9ed9-e92b21ab642b	11871	case	2c0a725a-e829-4d84-89d9-d0d47f6cfa37	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy of the L colon. No systemic chemotherapy or radiation.

@@ -1,0 +1,6 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+e9e59e13-ad8a-5cdc-a191-676a18a9cad1	6109	aliquot	1241effb-2aef-4b12-b58b-69c8f2356a71	Item is noncanonical	Notification	2012-06-26T00:00:00	Approved	FFPE COAD Pilot 1
+cb98cb31-904a-4a08-b8c6-01497bb06223	\N	aliquot	1241effb-2aef-4b12-b58b-69c8f2356a71	General	Notification	2022-08-08T12:41:35.180307-05:00	Approved	The WXS data for this aliquot failed the GDC harmonization pipeline.
+61d8032a-335f-4e7d-85f3-3d66ce3bc781	\N	aliquot	1241effb-2aef-4b12-b58b-69c8f2356a71	General	Notification	2022-08-08T12:41:35.180307-05:00	Approved	The WXS data for this aliquot failed the GDC harmonization pipeline.
+bd42eaf3-735f-4af8-b181-49ba1b8a25fd	\N	aliquot	1241effb-2aef-4b12-b58b-69c8f2356a71	General	Notification	2022-08-08T12:41:35.180307-05:00	Approved	The WXS data for this aliquot failed the GDC harmonization pipeline.
+20694ed0-d0a7-4736-9987-62d31693a060	\N	aliquot	1241effb-2aef-4b12-b58b-69c8f2356a71	General	Notification	2022-08-08T12:41:35.180307-05:00	Approved	The WXS data for this aliquot failed the GDC harmonization pipeline.

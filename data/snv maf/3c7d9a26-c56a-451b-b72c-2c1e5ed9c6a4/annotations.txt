@@ -1,0 +1,2 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+efd8b1de-a41d-51b5-9667-024e9cacb43f	29681	aliquot	42036508-333e-4063-bdb2-c7b437c25212	Center QC failed	CenterNotification	2015-11-24T00:00:00	Approved	This sample showed an elevated contamination level when comparing the exome data with the SNP array data.

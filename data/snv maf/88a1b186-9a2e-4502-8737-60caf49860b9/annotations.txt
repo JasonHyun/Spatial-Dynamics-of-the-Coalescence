@@ -1,0 +1,4 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+8e3ec53f-c301-5882-a3db-794f76e90269	1082	case	28033279-cc74-4775-afdf-2497f6ddb55c	Prior malignancy	Notification	2010-12-19T00:00:00	Approved	[intgen.org]: Prior Malignancy
+2071cd5a-88cc-48e0-89fb-e574125ab215	\N	masked_somatic_mutation	88a1b186-9a2e-4502-8737-60caf49860b9	General	Notification	2022-02-28T13:10:23.353199-06:00	Approved	Variants from SomaticSniper are not included.
+f4266f77-b0ab-5a5c-a61c-22473ce8a4c5	11985	case	28033279-cc74-4775-afdf-2497f6ddb55c	History of acceptable prior treatment related to a prior/other malignancy	Notification	2012-11-10T00:00:00	Approved	Prior malignancy prostate cancer treated with radiation.

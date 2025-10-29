@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+06a820c0-93b0-5323-bf71-2ef738776575	11777	case	2d02bd7a-5beb-4e43-9ccb-18d89c9d5ca2	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy stomach cancer.  No systemic chemotherapy or radiation.
+f38a9a67-eb5d-46bc-9c5d-0621ac5dc03f	\N	masked_somatic_mutation	147c007c-af86-49db-8c4b-568ea0c176ad	General	Notification	2022-02-28T13:08:36.990260-06:00	Approved	Variants from SomaticSniper are not included.

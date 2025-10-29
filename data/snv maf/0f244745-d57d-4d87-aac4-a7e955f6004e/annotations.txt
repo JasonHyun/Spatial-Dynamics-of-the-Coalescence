@@ -1,0 +1,4 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+32e81023-bf17-46b5-9424-85ee67f36ef8	\N	masked_somatic_mutation	0f244745-d57d-4d87-aac4-a7e955f6004e	General	Notification	2022-02-28T14:43:51.607034-06:00	Approved	Variants from SomaticSniper are not included.
+f3e59e56-8eb5-5d4b-bea1-47e57e9d111f	11783	case	93cd5d07-e0d3-40f8-ae7f-beadb1efb7c1	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy mycosis fungoides. No systemic chemotherapy or radiation.
+2d03999c-4183-56df-9e63-d8b5f14363e9	12003	case	93cd5d07-e0d3-40f8-ae7f-beadb1efb7c1	History of unacceptable prior treatment related to a prior/other malignancy	Notification	2012-11-10T00:00:00	Approved	Prior malignancy  ascending colon cancer treated w/ systemic chemotherapy. Prior malignancy  mycosis fungoides. No systemic chemotherapy or radiation.

@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+81ee5251-e2cd-559c-94db-0be7194e7a7e	6107	aliquot	ca943508-838b-4014-b577-8be89097933e	Item is noncanonical	Notification	2012-06-26T00:00:00	Approved	FFPE COAD Pilot 1
+9e2bcc9a-0a93-4a74-8321-85c23f49b035	\N	masked_somatic_mutation	07e17e3b-b482-40fc-980b-184e9d34506c	General	Notification	2022-02-28T14:47:14.816497-06:00	Approved	Variants from SomaticSniper are not included.

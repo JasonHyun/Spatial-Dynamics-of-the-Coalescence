@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+79208e02-f97f-4927-8e67-7a5f8399292a	\N	masked_somatic_mutation	00f05757-96c3-40e7-be6b-e1765253e050	General	Notification	2022-02-28T14:48:19.252625-06:00	Approved	Variants from SomaticSniper are not included.
+413bb770-9566-509b-96c1-e7ac384c1d65	11865	case	ab9cc98a-86ae-4913-bcb2-cc3aeff8abb1	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy prostate.  Unknown treatment history.

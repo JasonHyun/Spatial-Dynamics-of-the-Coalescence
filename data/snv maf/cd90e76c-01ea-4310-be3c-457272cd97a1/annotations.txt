@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+131a097f-edb1-5fa7-a5b9-634df02697fb	11687	case	4f786107-3cf5-4ab3-bba4-f399dee23f0e	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy malignant melanoma of the leg.  No systemic chemotherapy or radiation.
+c6aa4aaa-f772-4e38-9e60-140cfcac4aa3	\N	masked_somatic_mutation	cd90e76c-01ea-4310-be3c-457272cd97a1	General	Notification	2022-02-28T13:18:26.469638-06:00	Approved	Variants from SomaticSniper are not included.

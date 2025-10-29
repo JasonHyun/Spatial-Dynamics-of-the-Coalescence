@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+e8b9fdb5-67df-4065-859a-7d8fa17642a8	\N	masked_somatic_mutation	18f35388-8e8d-4fdb-ac33-f2160dd304ab	General	Notification	2022-02-28T14:48:28.407693-06:00	Approved	Variants from SomaticSniper are not included.
+29642db6-5d00-5095-9b37-3849f76d54ae	11693	case	c1e141af-bdd1-4176-8c0e-cf1ab0c1d9d3	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy oral cancer. No systemic chemotherapy or radiation.

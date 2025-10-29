@@ -1,0 +1,3 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+9262fa60-4010-4450-90a5-17f341c35b3c	\N	masked_somatic_mutation	0d1cd2b4-84f9-49df-bff3-431f8527cb69	General	Notification	2022-02-28T14:48:01.424749-06:00	Approved	Variants from SomaticSniper are not included.
+b8a36b26-39e5-5196-9597-12e73212a2b3	11767	case	95d4f0c4-5997-4ffb-b876-0ddfeee972bb	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy skin cancer L eyelid. No systemic chemotherapy or radiation.

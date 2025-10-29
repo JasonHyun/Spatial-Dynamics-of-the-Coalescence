@@ -1,0 +1,4 @@
+id	submitter_id	entity_type	entity_id	category	classification	created_datetime	status	notes
+47dcbdff-cd82-5acc-9061-53cbfe6166e1	11784	case	13eff2e5-e33a-485f-9ba4-8a7ccb3c7528	Prior malignancy	Notification	2012-10-31T00:00:00	Approved	Prior malignancy prostate cancer. No systemic chemotherapy or radiation. Patient with synchronous malignancy of the cecum.
+a0870826-52e8-4168-a24e-5a0004f377cf	\N	masked_somatic_mutation	1ef10483-aaf5-42b8-8325-580b9f2413c6	General	Notification	2022-02-28T13:10:22.145603-06:00	Approved	Variants from SomaticSniper are not included.
+1cfca884-83d9-5c7b-b0e1-8daa2b6ce0a5	12006	case	13eff2e5-e33a-485f-9ba4-8a7ccb3c7528	Synchronous malignancy	Notification	2012-11-10T00:00:00	Approved	Prior malignancy prostate cancer. No systemic chemotherapy or radiation. Patient with synchronous malignancy of the cecum.
