@@ -712,8 +712,38 @@ def main(data_directory, coalescent_results_file, results_directory):
     with open(coalescent_results_file, 'r') as f:
         coalescent_results = json.load(f)
     
-    # Find MAF files from successful reconstructions
-    successful_results = [r for r in coalescent_results if r.get('status') == 'success']
+    # Convert absolute paths in JSON to paths relative to current data_directory
+    # The JSON may contain old absolute paths that need to be converted
+    def convert_maf_path(old_path, data_dir):
+        """Convert absolute path from JSON to path relative to current data_directory."""
+        if not os.path.isabs(old_path):
+            # Already a relative path, join with data_directory if needed
+            if os.path.isabs(data_dir):
+                # If data_dir is absolute, use old_path directly if it exists
+                if os.path.exists(old_path):
+                    return old_path
+                # Otherwise try joining with data_dir
+                return os.path.join(data_dir, old_path)
+            return old_path
+        
+        # Extract patient_uuid and filename from old absolute path
+        # Pattern: /old/root/data/snv maf/patient_uuid/filename
+        old_path_obj = Path(old_path)
+        patient_uuid = old_path_obj.parent.name
+        filename = old_path_obj.name
+        
+        # Reconstruct path using current data_directory
+        new_path = os.path.join(data_dir, patient_uuid, filename)
+        return new_path
+    
+    # Find MAF files from successful reconstructions and convert paths
+    successful_results = []
+    for r in coalescent_results:
+        if r.get('status') == 'success':
+            # Create a copy and update the maf_file path
+            result_copy = r.copy()
+            result_copy['maf_file'] = convert_maf_path(r['maf_file'], data_directory)
+            successful_results.append(result_copy)
     
     print(f"Found {len(successful_results)} successful coalescent reconstructions")
     print(f"Processing spatial mapping for each tree...\n")
