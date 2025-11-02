@@ -521,9 +521,15 @@ Ratio (β/α): {ratio:.4f}
         return None
 
 
-def process_single_tree_for_spatial_mapping(maf_file, output_dir, random_seed=None):
+def process_single_tree_for_spatial_mapping(maf_file, output_dir, coalescent_result=None, random_seed=None):
     """
     Process a single MAF file to create spatial mapping of the coalescent tree.
+    
+    Args:
+        maf_file: Path to MAF file
+        output_dir: Output directory for results
+        coalescent_result: Optional coalescent result dict from JSON (if None, will regenerate)
+        random_seed: Optional random seed (if None and coalescent_result provided, uses saved seed)
     
     Returns:
         Dictionary with results or error information
@@ -531,13 +537,6 @@ def process_single_tree_for_spatial_mapping(maf_file, output_dir, random_seed=No
     try:
         # Extract patient UUID from file path
         patient_uuid = Path(maf_file).parent.name
-        
-        # Use deterministic seed based on patient UUID for reproducibility
-        # hash() can vary across Python sessions, so we use MD5 instead
-        if random_seed is None:
-            # Create deterministic integer from UUID string
-            hash_obj = hashlib.md5(patient_uuid.encode('utf-8'))
-            random_seed = int(hash_obj.hexdigest(), 16) % (2**31)
         
         # Step 1: Load MAF data
         mutations, error = load_maf_data(maf_file)
@@ -549,18 +548,64 @@ def process_single_tree_for_spatial_mapping(maf_file, output_dir, random_seed=No
                 'error': error
             }
         
-        # Step 2: Estimate effective population size
-        vafs = [m['vaf'] for m in mutations]
-        Ne = estimate_effective_population_size(vafs)
-        
-        # Step 3: Generate coalescent process (with seed for reproducibility)
-        n_lineages = len(mutations)
-        np.random.seed(random_seed)
-        coalescent_events, total_height = generate_coalescent_process(n_lineages, Ne, random_seed)
-        
-        # Step 4: Build coalescent tree structure
-        tree_structure, internal_nodes, leaf_nodes = build_coalescent_tree_structure(
-            coalescent_events, n_lineages)
+        # Step 2: Use coalescent tree from saved results if available
+        if coalescent_result is not None and 'coalescent_events' in coalescent_result:
+            # Use saved coalescent events and seed from JSON
+            saved_events = coalescent_result['coalescent_events']
+            saved_seed = coalescent_result.get('random_seed', None)
+            saved_ne = coalescent_result.get('effective_population_size', None)
+            saved_height = coalescent_result.get('total_tree_height', None)
+            
+            # Use saved seed or derive from UUID
+            if saved_seed is not None:
+                random_seed = int(saved_seed)
+            elif random_seed is None:
+                hash_obj = hashlib.md5(patient_uuid.encode('utf-8'))
+                random_seed = int(hash_obj.hexdigest(), 16) % (2**31)
+            
+            # Reconstruct coalescent events from saved data
+            coalescent_events = saved_events  # Already in correct format
+            total_height = float(saved_height) if saved_height is not None else sum(e['waiting_time'] for e in saved_events)
+            
+            # Use saved Ne to ensure consistency (should match calculated Ne)
+            if saved_ne is not None:
+                Ne = float(saved_ne)
+            else:
+                # Fallback: calculate from VAFs
+                vafs = [m['vaf'] for m in mutations]
+                Ne = estimate_effective_population_size(vafs)
+            
+            # Verify Ne matches calculated value (for validation)
+            vafs = [m['vaf'] for m in mutations]
+            calculated_ne = estimate_effective_population_size(vafs)
+            if abs(Ne - calculated_ne) > 0.01:
+                print(f"  Warning: Ne mismatch (saved={Ne:.4f}, calculated={calculated_ne:.4f}), using saved value")
+            
+            # Step 3: Build coalescent tree structure using saved events
+            # Use same seed to ensure deterministic lineage selection
+            np.random.seed(random_seed)
+            tree_structure, internal_nodes, leaf_nodes = build_coalescent_tree_structure(
+                coalescent_events, len(mutations))
+        else:
+            # Fallback: regenerate coalescent process (for backward compatibility)
+            # Use deterministic seed based on patient UUID for reproducibility
+            if random_seed is None:
+                hash_obj = hashlib.md5(patient_uuid.encode('utf-8'))
+                random_seed = int(hash_obj.hexdigest(), 16) % (2**31)
+            
+            # Step 2: Estimate effective population size
+            vafs = [m['vaf'] for m in mutations]
+            Ne = estimate_effective_population_size(vafs)
+            
+            # Step 3: Generate coalescent process (with seed for reproducibility)
+            n_lineages = len(mutations)
+            np.random.seed(random_seed)
+            coalescent_events, total_height = generate_coalescent_process(n_lineages, Ne, random_seed)
+            
+            # Step 4: Build coalescent tree structure
+            np.random.seed(random_seed)
+            tree_structure, internal_nodes, leaf_nodes = build_coalescent_tree_structure(
+                coalescent_events, n_lineages)
         
         # Step 5: Map mutations to lineages
         mutation_mapping = map_mutations_to_lineages(mutations, leaf_nodes, tree_structure)
@@ -758,7 +803,15 @@ def main(data_directory, coalescent_results_file, results_directory):
         
         print(f"Processing {idx}/{len(successful_results)}: {patient_uuid}")
         
-        result_spatial = process_single_tree_for_spatial_mapping(maf_file, spatial_dir)
+        # Find corresponding coalescent result to get saved tree structure
+        coalescent_result = None
+        for c_result in coalescent_results:
+            if c_result.get('patient_uuid') == patient_uuid and c_result.get('status') == 'success':
+                coalescent_result = c_result
+                break
+        
+        result_spatial = process_single_tree_for_spatial_mapping(
+            maf_file, spatial_dir, coalescent_result=coalescent_result)
         results_summary.append(result_spatial)
         
         if result_spatial['status'] == 'success':

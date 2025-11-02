@@ -22,6 +22,7 @@ from scipy import stats
 import os
 import glob
 import json
+import hashlib
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
@@ -392,6 +393,11 @@ def process_single_maf_file(maf_file, output_dir):
         # Extract patient UUID from file path
         patient_uuid = Path(maf_file).parent.name
         
+        # Use deterministic seed based on patient UUID for reproducibility
+        # Same method as spatial mapping to ensure consistency
+        hash_obj = hashlib.md5(patient_uuid.encode('utf-8'))
+        random_seed = int(hash_obj.hexdigest(), 16) % (2**31)
+        
         # Step 1: Load MAF data
         mutations, error = load_maf_data(maf_file)
         if error:
@@ -406,11 +412,13 @@ def process_single_maf_file(maf_file, output_dir):
         vafs = [m['vaf'] for m in mutations]
         Ne = estimate_effective_population_size(vafs)
         
-        # Step 3: Generate coalescent process
+        # Step 3: Generate coalescent process (with deterministic seed)
         n_lineages = len(mutations)
-        coalescent_events, total_height = generate_coalescent_process(n_lineages, Ne)
+        np.random.seed(random_seed)
+        coalescent_events, total_height = generate_coalescent_process(n_lineages, Ne, random_seed)
         
-        # Step 4: Build coalescent tree structure
+        # Step 4: Build coalescent tree structure (use same seed for lineage selection)
+        np.random.seed(random_seed)
         tree_structure, internal_nodes, leaf_nodes = build_coalescent_tree_structure(
             coalescent_events, n_lineages)
         
@@ -427,6 +435,19 @@ def process_single_maf_file(maf_file, output_dir):
             patient_uuid, output_dir)
         
         # Compile results
+        # Save coalescent_events for reproducibility (for spatial mapping to use same tree)
+        # Convert numpy types to native Python types for JSON serialization
+        coalescent_events_serializable = []
+        for event in coalescent_events:
+            coalescent_events_serializable.append({
+                'event_id': int(event['event_id']),
+                'time': float(event['time']),
+                'lineages_before': int(event['lineages_before']),
+                'lineages_after': int(event['lineages_after']),
+                'waiting_time': float(event['waiting_time']),
+                'coalescence_rate': float(event['coalescence_rate'])
+            })
+        
         results = {
             'status': 'success',
             'patient_uuid': patient_uuid,
@@ -436,6 +457,8 @@ def process_single_maf_file(maf_file, output_dir):
             'n_coalescent_events': len(internal_nodes),
             'effective_population_size': float(Ne),
             'total_tree_height': float(total_height),
+            'random_seed': int(random_seed),  # Save seed for reproducibility
+            'coalescent_events': coalescent_events_serializable,  # Save events for tree reconstruction
             'vaf_range': [float(min(vafs)), float(max(vafs))],
             'validation_results': validation_results,
             'plot_path': plot_path
