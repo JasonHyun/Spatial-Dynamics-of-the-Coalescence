@@ -31,7 +31,7 @@ conda activate thesis-coalescent
 
 ### Data Setup
 
-**Note**: The somatic mutation information data has been downloaded from the GDC Data Portal using the data transfer tool and the included manifest file under snv maf. 
+**Note**: The somatic mutation information data has been downloaded from the GDC Data Portal using the data transfer tool and the included manifest file under snv maf. All data  obtained from the NCI Genomic Data Commons.
 
 
 ### Running the Pipeline
